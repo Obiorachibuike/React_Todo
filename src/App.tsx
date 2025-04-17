@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from 'react';
 
+// Define the Task type
+interface Task {
+  id: number;
+  text: string;
+}
+
 function App() {
   const [task, setTask] = useState('');
-  const [tasks, setTasks] = useState([]);
+  const [tasks, setTasks] = useState<Task[]>([]); // Define state with Task type
 
   // Load tasks from localStorage
   useEffect(() => {
-    const savedTasks = JSON.parse(localStorage.getItem('tasks'));
-    if (savedTasks) {
-      setTasks(savedTasks);
-    }
+    const savedTasks = JSON.parse(localStorage.getItem('tasks') || '[]'); // Default to empty array if null
+    setTasks(savedTasks);
   }, []);
 
   // Save tasks to localStorage
@@ -26,15 +30,18 @@ function App() {
   };
 
   // Delete task
-  const deleteTask = (id) => {
+  const deleteTask = (id: number) => { // Specify id as number
     setTasks(tasks.filter((task) => task.id !== id));
   };
 
   // Edit task
-  const editTask = (id) => {
-    const newTask = prompt('Edit task:', tasks.find((task) => task.id === id).text);
-    if (newTask !== null && newTask.trim() !== '') {
-      setTasks(tasks.map((task) => (task.id === id ? { ...task, text: newTask } : task)));
+  const editTask = (id: number) => { // Specify id as number
+    const currentTask = tasks.find((task) => task.id === id);
+    if (currentTask) {
+      const newTask = prompt('Edit task:', currentTask.text);
+      if (newTask !== null && newTask.trim() !== '') {
+        setTasks(tasks.map((task) => (task.id === id ? { ...task, text: newTask } : task)));
+      }
     }
   };
 
